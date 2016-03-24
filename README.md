@@ -90,14 +90,13 @@ sudo systemctl stop bluetooth
 
 #sudo make install
 sudo checkinstall
-```
 
+sudo sed -i '/^ExecStart.*bluetoothd\s*$/ s/$/ --experimental/' /lib/systemd/system/bluetooth.service
+#sudo sed -i '/^ExecStart.*bluetoothd\s*$/ s/$/ --experimental/' /etc/systemd/system/bluetooth.target.wants/bluetooth.service
+#sudo sed -i '/^ExecStart/ s/usr\/bin/usr\/local\/bin/' /lib/systemd/system/hciuart.service
 
+sudo systemctl daemon-reload && sudo systemctl restart bluetooth && sudo systemctl status bluetooth
 
-```
-sudo systemctl daemon-reload 
-sudo systemctl restart bluetooth
-sudo systemctl status bluetooth
 sudo hciconfig hci0 up
 ```
 
