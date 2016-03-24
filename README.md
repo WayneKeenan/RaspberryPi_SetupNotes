@@ -2,13 +2,29 @@
 Various notes on configuring a Pi 3
 
 
+# Base Image setup
+
+```
+https://downloads.raspberrypi.org/raspbian/images/raspbian-2016-02-29/2016-02-26-raspbian-jessie.zip
+```
+
+## raspi-config
+
+- Expand FS
+
+**Reboot**
+
+
+Choose last known good version of kernel (e.g. fixes UART)
+
+```
 sudo rpi-update 692dde0c1586f7310301379a502b9680d0c104fd
+```
 
 
+**Reboot**
 
 ## Remote access
-
-
 
 
 ### Auto SSH login setup
@@ -24,6 +40,18 @@ cat ~/.ssh/id_rsa.pub | ssh pi@raspberrypi.local 'mkdir ~/.ssh; cat >> .ssh/auth
 if [ -e ~/.ssh/id_rsa.pub ]; then cat ~/.ssh/id_rsa.pub | ssh pi@raspberrypi.local 'mkdir ~/.ssh; cat >> .ssh/authorized_keys' ; else ssh-keygen -t rsa; fi
 
 ```
+
+# config.txt
+
+```
+echo 'dtparam=audio=on
+start_x=1
+gpu_mem=128
+framebuffer_width=1280
+framebuffer_height=720
+enable_uart=1' | sudo tee /boot/config.txt
+```
+
 
 
 
@@ -52,13 +80,6 @@ mkdir apps && \
 sudo chown root.root apps && \
 echo ‘slimstation.local:/volume1/rpi/shared/apps /home/pi/apps nfs nouser,atime,auto,rw,dev,exec,suid,nolock,auto 0 0' | sudo tee --append /etc/fstab && \
 sudo mount -a
-```
-
-### Serial
-
-For Pi 3
-```
-echo 'enable_uart=1' | sudo tee --append /boot/config.txt
 ```
 
 
