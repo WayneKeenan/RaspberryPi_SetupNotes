@@ -1,18 +1,39 @@
 # RaspberryPi Setup Notes
-Various notes on configuring a Pi they way I like
+Various notes on configuring a Pi 3
+
+
+sudo rpi-update 692dde0c1586f7310301379a502b9680d0c104fd
+
 
 
 ## Remote access
+
+
+
+
+### Auto SSH login setup
+
+on client:
+
+```
+#if a key doest alreada exists: ssh-keygen -t rsa
+cat ~/.ssh/id_rsa.pub | ssh pi@raspberrypi.local 'mkdir ~/.ssh; cat >> .ssh/authorized_keys'
+
+
+# All in one line:
+if [ -e ~/.ssh/id_rsa.pub ]; then cat ~/.ssh/id_rsa.pub | ssh pi@raspberrypi.local 'mkdir ~/.ssh; cat >> .ssh/authorized_keys' ; else ssh-keygen -t rsa; fi
+
+```
+
+
 
 ### Install X11 VNC
 
 ```
 sudo apt-get install x11vnc -y
-x11vnc -storepasswd
+x11vnc -storepasswd letmein /home/pi/.vnc/passwd
 touch ~/.xsessionrc
-
-echo "x11vnc -bg -nevershared -forever -tightfilexfer -usepw -display :0" >> /home/pi/.xsessionrc
-
+echo "x11vnc -bg -nevershared -forever -tightfilexfer -usepw -avahi -displayinet :0" >> /home/pi/.xsessionrc
 chmod 775 /home/pi/.xsessionrc
 
 echo  'framebuffer_width=1280
@@ -23,23 +44,13 @@ framebuffer_height=720' | sudo tee --append /boot/config.txt
 
 
 
-
-### Auto SSH login setup
-
-```
-on client:
-ssh-keygen -t rsa
-cat ~/.ssh/id_rsa.pub | ssh pi@raspberrypi.local 'mkdir ~/.ssh; cat >> .ssh/authorized_keys'
-```
-
-
 ### NFS Mount
 
 ```
-cd ~pi
-mkdir apps
-sudo chown root.root apps
-echo ‘slimstation.local:/volume1/rpi/shared/apps /home/pi/apps nfs nouser,atime,auto,rw,dev,exec,suid,nolock,auto 0 0' | sudo tee --append /etc/fstab
+cd ~pi && \
+mkdir apps && \
+sudo chown root.root apps && \
+echo ‘slimstation.local:/volume1/rpi/shared/apps /home/pi/apps nfs nouser,atime,auto,rw,dev,exec,suid,nolock,auto 0 0' | sudo tee --append /etc/fstab && \
 sudo mount -a
 ```
 
