@@ -11,20 +11,37 @@ https://downloads.raspberrypi.org/raspbian/images/raspbian-2016-02-29/2016-02-26
 ## raspi-config
 
 - Expand FS
+- GPI split 128
+- Enable serial
+- Enable camera
 
-**Reboot**
 
+## config.txt
+
+```
+echo 'dtparam=audio=on
+start_x=1
+gpu_mem=128
+framebuffer_width=1280
+framebuffer_height=720
+enable_uart=1' | sudo tee /boot/config.txt
+```
 
 Choose last known good version of kernel (e.g. fixes UART)
 
+**Reboot**
+
 ```
+sudo apt-get update
 sudo rpi-update 692dde0c1586f7310301379a502b9680d0c104fd
 ```
 
-
 **Reboot**
 
-## Remote access
+
+---
+
+# Remote access
 
 
 ### Auto SSH login setup
@@ -41,18 +58,6 @@ if [ -e ~/.ssh/id_rsa.pub ]; then cat ~/.ssh/id_rsa.pub | ssh pi@raspberrypi.loc
 
 ```
 
-# config.txt
-
-```
-echo 'dtparam=audio=on
-start_x=1
-gpu_mem=128
-framebuffer_width=1280
-framebuffer_height=720
-enable_uart=1' | sudo tee /boot/config.txt
-```
-
-
 
 
 ### Install X11 VNC
@@ -61,16 +66,23 @@ enable_uart=1' | sudo tee /boot/config.txt
 sudo apt-get install x11vnc -y
 x11vnc -storepasswd letmein /home/pi/.vnc/passwd
 touch ~/.xsessionrc
-echo "x11vnc -bg -nevershared -forever -tightfilexfer -usepw -avahi -displayinet :0" >> /home/pi/.xsessionrc
+echo "x11vnc -bg -nevershared -forever -tightfilexfer -usepw -avahi -display :0" > ~/.xsessionrc
 chmod 775 /home/pi/.xsessionrc
+```
 
-echo  'framebuffer_width=1280
-framebuffer_height=720' | sudo tee --append /boot/config.txt
+### Bluetooth (Classic) NEtwork sharing
+
+See [Video](https://www.youtube.com/watch?v=4Ac0wc-f9HI)
+
+auto connect:
+
+http://blog.fraggod.net/2015/03/28/bluetooth-pan-network-setup-with-bluez-5x.html
 
 
 ```
-
-
+sudo apt-get install bluetooth python-gobject blueman --no-install-recommends
+sudo usermod -G bluetooth -a $USER
+```
 
 ### NFS Mount
 
@@ -78,10 +90,12 @@ framebuffer_height=720' | sudo tee --append /boot/config.txt
 cd ~pi && \
 mkdir apps && \
 sudo chown root.root apps && \
-echo ‘slimstation.local:/volume1/rpi/shared/apps /home/pi/apps nfs nouser,atime,auto,rw,dev,exec,suid,nolock,auto 0 0' | sudo tee --append /etc/fstab && \
+echo 'slimstation.local:/volume1/rpi/shared/apps /home/pi/apps nfs nouser,atime,auto,rw,dev,exec,suid,nolock,auto 0 0' | sudo tee --append /etc/fstab && \
 sudo mount -a
 ```
 
+
+---
 
 
 ## Bluetooth LE
@@ -92,7 +106,7 @@ sudo mount -a
 sudo apt-get install libglib2.0-dev libdbus-1-dev libical-dev libusb-1.0-0.dev libreadline-dev checkinstall
 
 
-#from: http://archive.raspbian.org/raspbian/pool/main/b/bluez/
+#For Deb package ref: http://archive.raspbian.org/raspbian/pool/main/b/bluez/
 # bluez_5.36-1.debian.tar.xz 
 # rules
 
@@ -101,21 +115,6 @@ sudo apt-get install libglib2.0-dev libdbus-1-dev libical-dev libusb-1.0-0.dev l
         --libexec=/lib \
         --enable-experimental \
 	--disable-cups 
-
---disable-silent-rules 
-        --enable-threads \
-        --enable-sixaxis \
-        --enable-library \
-        --enable-monitor \
-        --enable-udev \
-        --enable-client \
-        --enable-obex \
-        --enable-static \
-        --enable-tools \
-        --enable-cups \
-        --enable-datafiles \
-        --enable-debug \
-
 
 
 sudo systemctl stop bluetooth
@@ -146,7 +145,34 @@ node advertisement-discovery.js
 ```
 
 
-# Camera Streamining
+---
+
+# NodeJS
+
+
+```
+sudo apt-get remove -y nodered nodejs nodejs-legacy npm
+
+curl -sL https://deb.nodesource.com/setup_5.x | sudo bash -
+
+sudo apt-get install -y nodejs build-essential python-dev python-rpi.gpio nodejs libudev-dev libusb-1.0-0.dev libcap2-bin
+
+sudo setcap cap_net_raw+eip $(eval readlink -f `which node`)
+
+```
+
+Re-install nodeRed
+
+```
+sudo npm cache clean
+sudo npm install -g --unsafe-perm  node-red
+```
+
+---
+
+# Extras
+
+### Camera Streamining
 
 ```
 sudo apt-get install cmake
@@ -160,23 +186,7 @@ make
 
 
 
-# NodeJS
-
-
-ALTERNATE:  http://thisdavej.com/beginners-guide-to-installing-node-js-on-a-raspberry-pi/
-```
-sudo apt-get install nom
-sudo npm cache clean -f 
-sudo npm install n -g
-sudo n stable
-
-sudo ln -sf /usr/local/n/versions/node/5.8.0/bin/node /usr/bin/node
-
-Note: wasn't required: sudo ln -sf /usr/local/n/versions/node/5.8.0/bin/npm /usr/bin/npm
-```
-
-
-# Pi Chrome
+### Pi Chrome
 
 ```
 Pi Chromium
