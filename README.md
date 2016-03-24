@@ -142,3 +142,36 @@ sudo ln -sf /usr/local/n/versions/node/5.8.0/bin/node /usr/bin/node
 
 Note: wasn't required: sudo ln -sf /usr/local/n/versions/node/5.8.0/bin/npm /usr/bin/npm
 ```
+
+
+# Pi Chrome
+
+```
+Pi Chromium
+
+http://askubuntu.com/questions/225930/how-do-i-get-the-latest-beta-and-development-version-of-chromium
+
+
+LATEST BUILDS:  https://launchpad.net/~saiarcot895/+archive/ubuntu/chromium-beta/+builds?build_text=&build_state=all
+
+50
+
+https://launchpad.net/~saiarcot895/+archive/ubuntu/chromium-beta/+packages
+
+
+Stable:
+https://launchpad.net/ubuntu/trusty/armhf/libgcrypt11/
+https://launchpad.net/ubuntu/trusty/armhf/chromium-browser/
+https://launchpad.net/ubuntu/trusty/armhf/chromium-codecs-ffmpeg-extra/
+
+wget http://launchpadlibrarian.net/237755896/libgcrypt11_1.5.3-2ubuntu4.3_armhf.deb
+wget http://launchpadlibrarian.net/248437551/chromium-codecs-ffmpeg-extra_49.0.2623.87-0ubuntu0.14.04.1.1112_armhf.deb
+wget http://launchpadlibrarian.net/248437549/chromium-browser_49.0.2623.87-0ubuntu0.14.04.1.1112_armhf.deb
+
+```
+
+
+# Debian Package Creation
+
+https://sourceforge.net/p/raspberry-gpio-python/code/ci/default/tree/
+
