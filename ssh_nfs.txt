@@ -1,0 +1,22 @@
+
+mac -> SSH (TCP port forwarding) -> pi -> socat (UDP) -> NAS NFS (slimstation)
+
+mac:  brew install socat
+pi:   sudo apt-get install socat
+
+
+
+Mac:  ssh -L 5049:localhost:5049 pi@waynespi.dyndns.org
+
+Pi: socat tcp4-listen:5049,reuseaddr,fork UDP:192.168.0.41:2049
+
+
+Mac (Terminal): socat -T15 udp4-recvfrom:6049,reuseaddr,fork tcp:localhost:5049
+
+Mac (Drive Utility NFS setup): 
+
+nfs url: nfs://localhost:6049/volume1/rpi/shared/apps
+mount: /Users/wayne/projects/Pi/apps.sshnfs
+
+options: resvport,nolocks,locallocks,intr,soft,wsize=32768,rsize=3276
+

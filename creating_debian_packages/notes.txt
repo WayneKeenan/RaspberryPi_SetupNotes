@@ -1,0 +1,7 @@
+http://askubuntu.com/questions/1345/what-is-the-simplest-debian-packaging-guide
+
+http://www.asic-linux.com.mx/~izto/checkinstall/
+
+ 
+
+check install -D --pkgname  CBBlueZ  --pkgversion 1.0 --maintainer wayne@cannybots.com --requires 

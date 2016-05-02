@@ -1,0 +1,132 @@
+mix of:
+http://raspberrypihelp.net/tutorials/21-pptp-vpn-server-raspberry-pi
+and
+http://blog.wellsb.com/post/29412820494/raspberry-pi-vpn-server
+
+
+
+1.
+sudo modprobe ppp-compress-18
+[ENTER]
+
+No errors? You are good to go!
+
+
+2.
+sudo apt-get install pptpd
+
+
+3.
+sudo nano /etc/pptpd.conf
+
+At the end of the file, uncomment the following lines
+
+localip 92.63.173.219
+remoteip 192.168.1.234-238,192.168.1.245
+
+And change the "localip" to your raspberry pi ip adres
+Remoteip = are the addresses that will be handed out to clients.
+
+
+4.  [CHANGE FOR INTERNET HOSTING]
+
+sudo nano /etc/ppp/pptpd-options
+
+Add the follow txt on the bottom:
+
+ms-dns 92.63.173.219
+
+#noipx
+#mtu 1490
+#mru 1490
+
+Where the IP used for the ms-dns directive is the DNS server for the local network to which your client will be connecting (quite possibly the IP address of your router).
+
+
+5.
+
+sudo nano /etc/ppp/chap-secrets
+
+Add your authentication credentials in the following form:
+
+username[TAB]*[TAB]password[TAB]*
+
+
+6. 
+
+sudo service pptpd restart
+
+
+
+7.
+
+sudo nano /etc/sysctl.conf
+
+net.ipv4.ip_forward=1
+
+
+8.
+
+sudo nano /etc/rc.local
+
+sudo iptables -t nat -A POSTROUTING -s 192.168.0.234/24 -o eth0 -j SNAT --to  92.63.173.219
+
+
+
+Now forward port 1723 in your router/modem
+
+
+
+
+
+DNS masq, for SiriProxy
+
+sudo nano /etc/resolv.conf 
+nameserver      92.63.173.219
+
+
+sudo apt-get install dnsmasq
+
+sudo nano  /etc/dnsmasq.conf
+strict-order
+address=/guzzoni.apple.com/92.63.173.219
+address=/kryten.apple.com/92.63.173.219
+no-dhcp-interface=eth0
+
+
+sudo /etc/init.d/dnsmasq restart
+
+in iOS Safari browse to and accept cert:
+https://92.63.173.219/
+
+
+
+
+AS A SERVICE
+
+
+ sudo apt-get  install daemontools-run
+
+
+sudo nano /root/.pysiriproxy/pysiriproxy.cfg 
+
+ExitOnConnectionLost = True 
+#Host = "kryten.apple.com"
+Host = "guzzoni.apple.com"
+
+root@cloudpi:/home/pi/apps/pysiriproxy/src/pysiriproxy# sudo ./siriproxy --gencerts
+
+
+
+sudo mkdir /etc/service/pysiriproxy
+sudo nano /etc/service/pysiriproxy/run
+#!/bin/sh
+export HOME=/root
+exec /home/pi/apps/pysiriproxy/src/pysiriproxy/siriproxy 
+
+
+
+sudo chmod a+x  /etc/service/pysiriproxy/run
+
+
+

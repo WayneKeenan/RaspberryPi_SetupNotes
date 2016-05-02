@@ -1,0 +1,2 @@
+dwc_otg.lpm_enable=0 console=tty1 root=/dev/nfs nfsroot=192.168.0.41:/volume1/rpi/boot/current/rootfs,nolock,udp ip=dhcp rootfstype=nfs smsc95xx.turbo_mode=N
+
